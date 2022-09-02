@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/task_summary_container.dart';
 import 'package:todo_app/constants.dart';
+import 'package:todo_app/hive_objects/tasks_object.dart';
 import 'package:todo_app/pages/task_details_page.dart';
 import 'package:todo_app/providers/pages_provider.dart';
 
+import 'edit_or_add_task_page.dart';
+
 class TaskManagerHome extends StatelessWidget {
   const TaskManagerHome({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<PagesProvider>(
-      builder: (context, pagesProvider, child) {
+    return Consumer2<PagesProvider, Box<Task>>(
+      builder: (context, pagesProvider, box, child) {
+        final List<Task> tasks = box.values.toList().cast<Task>();
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -26,24 +30,23 @@ class TaskManagerHome extends StatelessWidget {
           body: RefreshIndicator(
             onRefresh: () async {},
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: tasks.length,
               itemBuilder: (context, index) {
+                Task task = tasks[index];
                 return InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => TaskDetailsPage(
-                        taskName: 'Test Task Name',
-                        taskDescriptions: 'taskDescriptions',
-                        taskDue: DateTime.parse('2022-08-23 20:00:00'),
-                        taskETA: const Duration(minutes: 15),
+                        task: task,
                       ),
                     ),
                   ),
                   child: TaskSummaryContainer(
-                    taskName: 'Test Task Name',
-                    taskDue: DateTime.parse('2022-08-23 20:00:00'),
-                    taskETA: const Duration(days: 1, hours: 1, minutes: 12),
-                    subtasksNum: 4,
+                    taskName: task.taskName,
+                    taskDue: task.taskDue,
+                    taskETA: task.taskETA,
+                    subtasksNum: task.subtasks.length,
+                    completedSubtasksNum: task.completedSubtasksNum,
                   ),
                 );
               },
@@ -52,7 +55,11 @@ class TaskManagerHome extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             tooltip: 'Add a task',
             child: const Icon(Icons.add_task_outlined),
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const EditOrAddTaskPage(),
+              ),
+            ),
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: pagesProvider.pageIndex,

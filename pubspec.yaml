@@ -11,15 +11,23 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  isar: ^2.5.0
-  hive: ^2.2.3
   provider: ^6.0.3
   dynamic_color: ^1.4.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  intl: ^0.17.0
+  duration: ^3.0.11
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^1.10.0
+  hive_generator:
+    git:
+        url: https://github.com/hivedb/hive.git
+        path: hive_generator
 
 flutter:
   uses-material-design: true

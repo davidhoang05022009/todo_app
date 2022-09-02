@@ -10,10 +10,12 @@ flutter run
 
 ### Wait, how did it build the Android build so quickly?
 
-I adjusted the Gradle build flags in the [`gradle.properties`](./android/gradle.properties) file as follows:
+I adjusted the Gradle build flags in the [`android/gradle.properties`](./android/gradle.properties) file as follows:
 ```properties
-org.gradle.jvmargs=-Xmx1536M -XX:+UseParallelGC
+org.gradle.jvmargs=-Xmx3072M -XX:+UseParallelGC
 android.useAndroidX=true
 android.enableJetifier=true
 org.gradle.parallel=true
 ```
+
+(My laptop has 8 GB of RAM, so I set the Gradle build heap size to 3 GB.)

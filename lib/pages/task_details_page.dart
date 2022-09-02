@@ -1,19 +1,26 @@
+import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/components/task_summary_container.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_app/components/subtask_container.dart';
 import 'package:todo_app/constants.dart';
-import 'package:todo_app/extensions/extensions.dart';
+import 'package:todo_app/hive_objects/tasks_object.dart';
+
+import 'edit_or_add_task_page.dart';
 
 class TaskDetailsPage extends StatelessWidget {
   const TaskDetailsPage({
     Key? key,
-    required this.taskName,
-    required this.taskDescriptions,
-    required this.taskDue,
-    required this.taskETA,
+    required this.task,
   }) : super(key: key);
-  final String taskName, taskDescriptions;
-  final DateTime taskDue;
-  final Duration taskETA;
+  final Task task;
+
+  void markAllTasksAsCompleted() {
+    task.isCompleted = true;
+    for (Subtask subtask in task.subtasks) {
+      subtask.isCompleted = true;
+    }
+    task.save();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,25 +44,30 @@ class TaskDetailsPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(kPadding),
                   child: Text(
-                    taskName,
+                    task.taskName,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(kPadding),
                   child: Text(
-                    'Due: ${taskDue.toApproxDateTime()}',
+                    'Due: In ${prettyDuration(
+                      task.taskDue.difference(
+                        DateTime.now(),
+                      ),
+                      tersity: DurationTersity.minute,
+                    )} (${DateFormat.yMMMMEEEEd().format(task.taskDue)})',
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(kPadding),
                   child: Text(
-                    'ETA: ${taskETA.toApproxDurationString()}',
+                    'ETA: ${prettyDuration(task.taskETA)}',
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(kPadding),
-                  child: Text(taskDescriptions),
+                  child: Text(task.taskDescriptions),
                 ),
                 const Padding(
                   padding: EdgeInsets.all(kPadding),
@@ -66,15 +78,22 @@ class TaskDetailsPage extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 4,
+              itemCount: task.subtasks.length,
               itemBuilder: (context, index) {
-                return TaskSummaryContainer(
-                  taskName: 'Test Task Name',
-                  taskDue: DateTime.parse('2022-08-23 20:00:00'),
-                  taskETA: const Duration(days: 1, hours: 1, minutes: 12),
-                  subtasksNum: 4,
+                Subtask subtask = task.subtasks[index];
+                return SubtaskContainer(
+                  taskName: subtask.taskName,
+                  taskETA: subtask.taskETA,
                 );
               },
+            ),
+          ),
+          SizedBox(
+            height: 50,
+            child: TextButton.icon(
+              onPressed: markAllTasksAsCompleted,
+              icon: const Icon(Icons.check),
+              label: const Text('Mark all as completed'),
             ),
           ),
         ],
@@ -85,7 +104,13 @@ class TaskDetailsPage extends StatelessWidget {
           'Edit this task',
         ),
         icon: const Icon(Icons.edit),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditOrAddTaskPage(
+              task: task,
+            ),
+          ),
+        ),
       ),
     );
   }
