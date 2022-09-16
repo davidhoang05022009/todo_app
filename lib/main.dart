@@ -63,7 +63,8 @@ class TaskManagerApp extends StatelessWidget {
                 create: (_) => PagesProvider(),
               ),
               ValueListenableProvider<Box<Task>>.value(
-                  value: Hive.box<Task>('userTasks').listenable())
+                value: Hive.box<Task>('userTasks').listenable(),
+              ),
             ],
             child: const TaskManagerHome(),
           ),
