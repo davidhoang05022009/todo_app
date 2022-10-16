@@ -4,24 +4,37 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/constants.dart';
 import 'package:todo_app/hive_objects/tasks_object.dart';
-import 'package:todo_app/providers/pages_provider.dart';
+import 'package:todo_app/providers/current_task_provider.dart';
 
-import 'pages/task_manager_home.dart';
+import 'pages/todo_home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Hive for tasks storage
   await Hive.initFlutter();
+  Hive.registerAdapter(
+    TaskAdapter(),
+  );
   await Hive.openBox<Task>('userTasks');
 
   runApp(
-    const TaskManagerApp(),
+    MultiProvider(
+      providers: [
+        ValueListenableProvider<Box<Task>>.value(
+          value: Hive.box<Task>('userTasks').listenable(),
+        ),
+        ChangeNotifierProvider<CurrentTaskProvider>(
+          create: (_) => CurrentTaskProvider(),
+        ),
+      ],
+      child: const TodoApp(),
+    ),
   );
 }
 
-class TaskManagerApp extends StatelessWidget {
-  const TaskManagerApp({Key? key}) : super(key: key);
+class TodoApp extends StatelessWidget {
+  const TodoApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +59,7 @@ class TaskManagerApp extends StatelessWidget {
         }
 
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: lightColorScheme,
@@ -57,17 +71,7 @@ class TaskManagerApp extends StatelessWidget {
             fontFamily: 'Noto Sans Medium',
             brightness: Brightness.dark,
           ),
-          home: MultiProvider(
-            providers: [
-              ChangeNotifierProvider<PagesProvider>(
-                create: (_) => PagesProvider(),
-              ),
-              ValueListenableProvider<Box<Task>>.value(
-                value: Hive.box<Task>('userTasks').listenable(),
-              ),
-            ],
-            child: const TaskManagerHome(),
-          ),
+          home: const TodoHome(),
         );
       },
     );

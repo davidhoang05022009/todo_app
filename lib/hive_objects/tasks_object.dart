@@ -1,3 +1,5 @@
+// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'tasks_object.g.dart';
@@ -8,19 +10,19 @@ class Task extends HiveObject {
   late String taskName;
 
   @HiveField(1)
-  late DateTime taskDue;
+  DateTime? taskDue;
 
   @HiveField(2)
-  late Duration taskETA;
+  DateTimeRange? taskETA;
 
   @HiveField(3)
-  late String taskDescriptions;
+  String? taskDescriptions;
 
   @HiveField(4)
-  late List<Subtask> subtasks;
+  List<Subtask>? subtasks;
 
   @HiveField(5)
-  late int completedSubtasksNum;
+  int? completedSubtasksNum;
 
   @HiveField(6)
   bool isCompleted = false;
@@ -28,6 +30,6 @@ class Task extends HiveObject {
 
 class Subtask extends Object {
   late String taskName;
-  late Duration taskETA;
+  DateTimeRange? taskETA;
   bool isCompleted = false;
 }

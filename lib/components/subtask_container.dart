@@ -1,5 +1,6 @@
 import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todo_app/constants.dart';
 
 class SubtaskContainer extends StatelessWidget {
@@ -10,7 +11,7 @@ class SubtaskContainer extends StatelessWidget {
   }) : super(key: key);
 
   final String taskName;
-  final Duration taskETA;
+  final DateTimeRange taskETA;
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +37,9 @@ class SubtaskContainer extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              child: Container(),
-            ),
-            const VerticalDivider(
-              indent: kPadding,
-              endIndent: kPadding,
-              thickness: 2,
-            ),
             Container(
-              margin:
-                  const EdgeInsets.only(left: kPadding, right: kPadding * 2),
+              margin: const EdgeInsets.all(kPadding),
+              padding: const EdgeInsets.all(kPadding),
               child: RichText(
                 text: TextSpan(
                   text: 'ETA: ',
@@ -55,9 +48,10 @@ class SubtaskContainer extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: prettyDuration(taskETA),
+                      text:
+                          'In ${prettyDuration(taskETA.duration)} (${DateFormat.yMMMd().format(taskETA.start)} ${DateFormat.Hm().format(taskETA.start)} - ${DateFormat.yMMMd().format(taskETA.end)} ${DateFormat.Hm().format(taskETA.end)})',
                       style: const TextStyle(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

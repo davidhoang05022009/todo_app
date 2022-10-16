@@ -18,11 +18,11 @@ class TaskAdapter extends TypeAdapter<Task> {
     };
     return Task()
       ..taskName = fields[0] as String
-      ..taskDue = fields[1] as DateTime
-      ..taskETA = fields[2] as Duration
-      ..taskDescriptions = fields[3] as String
-      ..subtasks = (fields[4] as List).cast<Subtask>()
-      ..completedSubtasksNum = fields[5] as int
+      ..taskDue = fields[1] as DateTime?
+      ..taskETA = fields[2] as DateTimeRange?
+      ..taskDescriptions = fields[3] as String?
+      ..subtasks = (fields[4] as List?)?.cast<Subtask>()
+      ..completedSubtasksNum = fields[5] as int?
       ..isCompleted = fields[6] as bool;
   }
 
